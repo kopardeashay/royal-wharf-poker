@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Royal Wharf Marathi Poker Club</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0b0b0f;--surface:#13131a;--surface2:#1a1a24;--border:#252535;--gold:#c8a84b;--gold2:#f0d478;--gold3:rgba(200,168,75,.12);--red:#d95f5f;--green:#52b788;--text:#ede8dc;--muted:#6b6b80;--muted2:#9090a8;--font-disp:'Playfair Display',serif;--font-body:'DM Sans',sans-serif;--font-mono:'DM Mono',monospace}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.65;min-height:100vh}.page{max-width:1080px;margin:auto;padding:0 20px 60px}
+.masthead{border-bottom:1px solid var(--border);padding:36px 0 28px;margin-bottom:24px;text-align:center;position:relative}.masthead:before{content:'♠  ♥  ♣  ♦';position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:.5em;color:var(--muted);opacity:.5}.masthead h1{font-family:var(--font-disp);font-size:clamp(1.6rem,4vw,2.8rem);color:var(--gold2);letter-spacing:.03em}.masthead .sub{font-family:var(--font-mono);font-size:11px;color:var(--muted2);letter-spacing:.14em;text-transform:uppercase}.qtag{display:inline-block;margin-top:10px;padding:4px 16px;border:1px solid var(--border);border-radius:20px;font-size:11px;color:var(--muted2);font-family:var(--font-mono)}
+.toolbar{display:flex;justify-content:flex-end;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:24px}.save-status{font-family:var(--font-mono);font-size:12px;color:var(--green);margin-right:auto}.btn{background:transparent;border:1px solid var(--border);color:var(--muted2);border-radius:6px;padding:8px 13px;cursor:pointer;font-family:var(--font-body);font-size:13px}.btn:hover{background:var(--surface2);color:var(--text)}.btn.gold{border-color:var(--gold);color:var(--gold)}.btn.gold:hover{background:var(--gold3)}input[type=file]{display:none}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-bottom:32px}.stat-card,.chart-card,.prob-card,.pred-card,.mc-card{background:var(--surface);border:1px solid var(--border);border-radius:10px}.stat-card{padding:14px 16px}.lbl,.pt,.il,.rl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}.stat-card .val{font-family:var(--font-mono);font-size:22px;line-height:1.2;margin:5px 0}.stat-card .sub,.pd,.prob-desc,.ssub{font-size:11px;color:var(--muted)}.vg{color:var(--gold2)}.vgr,.pos{color:var(--green)}.vr,.neg{color:var(--red)}.zer{color:var(--muted)}
+.section{margin-bottom:40px}.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:10px}.sec-head h2{font-family:var(--font-disp);font-size:1.25rem;color:var(--gold)}.chip{font-family:var(--font-mono);font-size:11px;color:var(--muted);padding:2px 10px;border:1px solid var(--border);border-radius:12px}.divider{height:1px;background:var(--border);margin-bottom:16px}
+.lb-wrap,.stbl-wrap,#mc-standings{overflow-x:auto}.lb,.stbl{width:100%;border-collapse:collapse;min-width:620px}.lb th,.stbl th{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;padding:8px 12px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}.lb th.r,.stbl th:not(:first-child){text-align:right}.lb td{padding:11px 12px;border-bottom:1px solid rgba(37,37,53,.6);white-space:nowrap}.lb td.r{text-align:right;font-family:var(--font-mono);font-size:13px}.lb tr:hover td,.stbl tr:hover td{background:var(--surface2)}.rank{font-family:var(--font-disp);font-style:italic;font-size:20px;color:var(--muted)}.rk1{color:var(--gold2)}.rk2{color:#a8c0d8}.rk3{color:#c8916a}.avatar{width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;margin-right:9px;vertical-align:middle;font-family:var(--font-mono)}.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:4px;margin-left:7px}.b-gold{background:rgba(200,168,75,.15);color:var(--gold2)}.b-red{background:rgba(217,95,95,.15);color:var(--red)}.b-green{background:rgba(82,183,136,.15);color:var(--green)}.wr-bar{height:5px;background:var(--border);border-radius:3px;width:60px;display:inline-block;vertical-align:middle;margin-left:7px;overflow:hidden}.wr-fill{height:100%;display:block;border-radius:3px}
+.charts-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}@media(max-width:660px){.charts-2,.pot-section{grid-template-columns:1fr}}.chart-card{padding:16px 18px}.chart-card h3{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px}.cw{position:relative;height:220px}
+.stbl{font-size:13px}.stbl th{padding:7px 11px;text-align:right}.stbl th:first-child{text-align:left}.stbl td{padding:8px 11px;border-bottom:1px solid rgba(37,37,53,.5);font-family:var(--font-mono);text-align:right;white-space:nowrap}.stbl td:first-child{text-align:left;font-family:var(--font-body);font-weight:500}.tot-row td{border-top:1px solid var(--border);opacity:.65;font-size:11px}
+.prob-grid,.pred-cards,.mc-grid,.settle-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:10px}.prob-card,.pred-card,.mc-card{padding:14px 16px}.prob-card .pn{font-weight:500;font-size:14px;margin-bottom:8px}.prob-pct{font-family:var(--font-mono);font-size:20px;margin-bottom:5px}.prob-bar,.mbar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:6px}.prob-fill,.mfill{height:100%;border-radius:3px}
+.pot-section{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center}.pot-legend{display:flex;flex-direction:column;gap:8px}.pot-row{display:flex;align-items:center;gap:10px;padding:10px 13px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)}.pot-dot{width:10px;height:10px;border-radius:50%}.pot-name{font-weight:500;flex:1}.pot-amt,.pot-pct{font-family:var(--font-mono);font-size:13px}.pot-pct{font-size:11px;color:var(--muted)}
+.settle-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px}.payer{color:var(--red);font-weight:500}.recvr{color:var(--green);font-weight:500}.amt{font-family:var(--font-mono);font-size:17px;color:var(--red);margin-left:auto}
+.pred-banner{background:linear-gradient(135deg,rgba(200,168,75,.1),rgba(82,183,136,.05));border:1px solid rgba(200,168,75,.25);border-radius:12px;padding:20px 28px;margin-bottom:14px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}.pred-banner .icon{font-size:36px}.pw{font-family:var(--font-disp);font-size:28px;color:var(--gold2)}.psub{font-size:12px;color:var(--muted2)}.pred-card .pv,.mc-card .mv{font-family:var(--font-mono);font-size:17px;font-weight:500;margin:7px 0 3px}.insight-box{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);padding:14px 18px;margin-bottom:10px}.insight-box .il{color:var(--gold);margin-bottom:6px}.insight-box p{font-size:13px;color:var(--muted2)}
+.mc-card .mr,.mc-card .mwin{font-family:var(--font-mono);font-size:11px;color:var(--muted)}.ruin-card{background:linear-gradient(135deg,rgba(217,95,95,.08),transparent);border:1px solid rgba(217,95,95,.2);border-radius:10px;padding:14px 18px}.ruin-card .rl{color:var(--red);margin-bottom:10px}.ruin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}.ruin-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(37,37,53,.5);font-size:12px}.footer{text-align:center;font-size:11px;color:var(--border);padding-top:20px;border-top:1px solid var(--surface2)}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="masthead"><h1>Royal Wharf Marathi Poker Club</h1><div class="sub">Est. 2026 · London</div><div class="qtag" id="qtag">Q2 2026</div></div>
+<div class="toolbar"><span class="save-status" id="save-status"></span>
+<button class="btn" onclick="refreshGoogleSheet()">↻ Refresh Live Data</button><button class="btn" onclick="resetData()">Reset</button><button class="btn gold" onclick="downloadExcel()">↓ Export Excel</button>
+<label class="btn gold" for="file-input">↑ Import Excel</label><input id="file-input" type="file" accept=".xlsx,.xls,.csv">
+</div>
+<div class="stats-grid" id="stats-grid"></div>
+<div class="section"><div class="sec-head"><h2>Leaderboard</h2><span class="chip" id="lb-chip"></span></div><div class="divider"></div><div class="lb-wrap"><table class="lb"><thead><tr><th>Rank</th><th>Member</th><th class="r">Total P&amp;L</th><th class="r">Sessions</th><th class="r">W / L</th><th>Win Rate</th><th class="r">Best</th><th class="r">Worst</th><th class="r">Avg/Session</th></tr></thead><tbody id="lb-body"></tbody></table></div></div>
+<div class="charts-2"><div class="chart-card"><h3>Cumulative P&amp;L</h3><div class="cw"><canvas id="cumulChart"></canvas></div></div><div class="chart-card"><h3>Session-by-Session Results</h3><div class="cw"><canvas id="barChart"></canvas></div></div></div>
+<div class="charts-2" style="margin-bottom:40px"><div class="chart-card"><h3>Wins vs Losses</h3><div class="cw"><canvas id="winChart"></canvas></div></div><div class="chart-card"><h3>Overall P&amp;L Balance</h3><div class="cw"><canvas id="doughChart"></canvas></div></div></div>
+<div class="section"><div class="sec-head"><h2>Session Breakdown</h2></div><div class="divider"></div><div class="stbl-wrap"><table class="stbl"><thead id="s-head"></thead><tbody id="s-body"></tbody></table></div></div>
+<div class="section"><div class="sec-head"><h2>Win Probability &amp; Streak</h2></div><div class="divider"></div><div class="prob-grid" id="prob-grid"></div></div>
+<div class="section"><div class="sec-head"><h2>Pot Distribution</h2><span class="chip">positive sessions only</span></div><div class="divider"></div><div class="pot-section"><div class="chart-card"><h3>Who scooped the pot</h3><div class="cw" style="height:260px"><canvas id="potChart"></canvas></div></div><div class="pot-legend" id="pot-legend"></div></div></div>
+<div class="section"><div class="sec-head"><h2>Settlement Calculator</h2><span class="chip">all sessions</span></div><div class="divider"></div><p style="font-size:12px;color:var(--muted);margin-bottom:14px">Minimum transactions to settle cumulative balances.</p><div class="settle-grid" id="settle-grid"></div></div>
+<div class="section"><div class="sec-head"><h2>Future Outlook &amp; Predictions</h2></div><div class="divider"></div><div class="pred-banner" id="pred-banner"></div><div class="pred-cards" id="pred-cards"></div><div id="insights"></div></div>
+<div class="section"><div class="sec-head"><h2>Monte Carlo Simulation</h2><span class="chip">10,000 runs · next 2 sessions</span></div><div class="divider"></div><p style="font-size:12px;color:var(--muted);margin-bottom:16px">Simulation based on each player's historical mean and standard deviation.</p><div class="charts-2"><div class="chart-card"><h3>Predicted final Q2 score</h3><div class="cw" style="height:240px"><canvas id="mcBarChart"></canvas></div></div><div class="chart-card"><h3>Probability of finishing Q2 in profit</h3><div class="cw" style="height:240px"><canvas id="mcWinChart"></canvas></div></div></div><div class="mc-grid" id="mc-grid"></div><div id="mc-standings" style="margin-top:14px"></div><div id="mc-ruin" style="margin-top:14px"></div></div>
+<div class="footer">♠ Royal Wharf Marathi Poker Club · Q2 2026 · Data persists in this browser ♠</div>
+</div>
+<script>
+const COLORS=['#c8a84b','#52b788','#6b9fd4','#d95f5f','#9b7fd4','#e8965a','#5bbcb0','#d46b8a'];
+const AVBG=['rgba(200,168,75,.18)','rgba(82,183,136,.18)','rgba(107,159,212,.18)','rgba(217,95,95,.18)','rgba(155,127,212,.18)','rgba(232,150,90,.18)','rgba(91,188,176,.18)','rgba(212,107,138,.18)'];
+const DEFAULT_DATA={dates:['04 May','21 May','24 May','30 May'],players:[
+{name:'Ashutosh',amounts:[-15.2,-11.7,11.3,-14]},{name:'Ashay',amounts:[-1.3,-5.9,3.9,-2]},
+{name:'Ganesh',amounts:[10.6,23.8,26.8,2.6]},{name:'Mayur',amounts:[.1,-6.2,-40,13.4]},
+{name:'Swapnil C',amounts:[0,0,-14.4,0]},{name:'Swapnil T',amounts:[5.1,0,0,0]},
+{name:'Dnyanesh',amounts:[.7,0,0,0]},{name:'Rahul',amounts:[0,0,12.4,0]}]};
+let CHARTS={};
+const $=id=>document.getElementById(id);
+function killCharts(){Object.values(CHARTS).forEach(c=>{try{c.destroy()}catch(e){}});CHARTS={}}
+function fmt(v){return(v>=0?'+':'')+Math.abs(v).toFixed(2)}
+function cls(v){return v>0?'pos':v<0?'neg':'zer'}
+function compute(players){return players.filter(p=>p.name.toLowerCase()!=='night pot').map((p,i)=>{
+let amts=p.amounts.map(v=>parseFloat(v)||0),total=amts.reduce((a,b)=>a+b,0),wins=amts.filter(v=>v>0).length,losses=amts.filter(v=>v<0).length,played=amts.filter(v=>v!==0).length,best=Math.max(...amts,0),worst=Math.min(...amts,0),avg=played?total/played:0,pot=amts.filter(v=>v>0).reduce((a,b)=>a+b,0),cumul=amts.reduce((a,v,i)=>(a.push((a[i-1]||0)+v),a),[]),winProb=(wins+1)/(wins+losses+2);
+let streak=0,cur=0,last=0;for(const v of amts){let s=v>0?1:v<0?-1:0;if(s===last&&s)cur++;else cur=s?1:0;streak=Math.max(streak,cur);last=s}
+return{...p,amts,total,wins,losses,played,best,worst,avg,pot,cumul,winProb,streak,color:COLORS[i%COLORS.length],avbg:AVBG[i%AVBG.length]}})}
+function minSettle(stats){let deb=stats.filter(p=>p.total<0).map(p=>({name:p.name,b:-p.total})).sort((a,b)=>b.b-a.b),cred=stats.filter(p=>p.total>0).map(p=>({name:p.name,b:p.total})).sort((a,b)=>b.b-a.b),out=[],i=0,j=0;while(i<deb.length&&j<cred.length){let x=Math.min(deb[i].b,cred[j].b);if(x>.005)out.push({payer:deb[i].name,recvr:cred[j].name,amount:x});deb[i].b-=x;cred[j].b-=x;if(deb[i].b<.005)i++;if(cred[j].b<.005)j++}return out}
+function chartCfg(){return{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#13131a',borderColor:'#252535',borderWidth:1,titleColor:'#6b6b80',bodyColor:'#ede8dc'}},scales:{x:{ticks:{color:'#6b6b80',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#6b6b80',font:{size:10},callback:v=>'£'+v},grid:{color:'rgba(255,255,255,.04)'}}}}}
+function render(dates,raw){
+killCharts();let stats=compute(raw),sorted=[...stats].sort((a,b)=>b.total-a.total),nd=dates.length,totalPot=stats.reduce((a,p)=>a+p.pot,0),avgPot=nd?totalPot/nd:0,leader=sorted[0],loser=sorted.at(-1);
+$('qtag').textContent=`Q2 2026 · Apr – Jun · ${nd} sessions`;$('lb-chip').textContent=`${sorted.length} members`;
+$('stats-grid').innerHTML=`<div class="stat-card"><div class="lbl">Sessions</div><div class="val vg">${nd}</div><div class="sub">Q2 2026</div></div><div class="stat-card"><div class="lbl">Total Pot Won</div><div class="val vg">£${totalPot.toFixed(2)}</div><div class="sub">cumulative winnings</div></div><div class="stat-card"><div class="lbl">Club Leader</div><div class="val vgr">${leader.name}</div><div class="sub">£${fmt(leader.total)}</div></div><div class="stat-card"><div class="lbl">Deepest in Hole</div><div class="val vr">${loser.name}</div><div class="sub">£${fmt(loser.total)}</div></div><div class="stat-card"><div class="lbl">Avg Pot/Session</div><div class="val vg">£${avgPot.toFixed(2)}</div><div class="sub">per round</div></div><div class="stat-card"><div class="lbl">Active Members</div><div class="val">${stats.filter(p=>p.played>0).length}</div><div class="sub">of ${stats.length} registered</div></div>`;
+$('lb-body').innerHTML=sorted.map((p,i)=>{let wr=(p.wins/Math.max(p.played,1)*100).toFixed(0),rk=i===0?'rk1':i===1?'rk2':i===2?'rk3':'';let badge=i===0?'<span class="badge b-gold">Leader</span>':p.total<0?'<span class="badge b-red">Deficit</span>':p.total>0?'<span class="badge b-green">Profit</span>':'';return`<tr><td><span class="rank ${rk}">${i+1}</span></td><td><span class="avatar" style="background:${p.avbg};color:${p.color}">${p.name.slice(0,2).toUpperCase()}</span><span class="pname">${p.name}</span>${badge}</td><td class="r ${cls(p.total)}">${fmt(p.total)}</td><td class="r">${p.played}</td><td class="r"><span class="pos">${p.wins}W</span> / <span class="neg">${p.losses}L</span></td><td><span style="font-family:var(--font-mono);font-size:12px">${wr}%</span><span class="wr-bar"><span class="wr-fill" style="width:${wr}%;background:${p.color}"></span></span></td><td class="r pos">${p.best>0?fmt(p.best):'-'}</td><td class="r neg">${p.worst<0?fmt(p.worst):'-'}</td><td class="r ${cls(p.avg)}">${fmt(p.avg)}</td></tr>`}).join('');
+CHARTS.cumul=new Chart($('cumulChart'),{type:'line',data:{labels:dates,datasets:stats.map(p=>({label:p.name,data:p.cumul.map(v=>+v.toFixed(2)),borderColor:p.color,backgroundColor:'transparent',borderWidth:2,pointRadius:3,tension:.3}))},options:chartCfg()});
+CHARTS.bar=new Chart($('barChart'),{type:'bar',data:{labels:dates,datasets:stats.map(p=>({label:p.name,data:p.amts.map(v=>+v.toFixed(2)),backgroundColor:p.color+'99',borderColor:p.color,borderWidth:1}))},options:chartCfg()});
+let wc=chartCfg();wc.plugins.legend={display:true,labels:{color:'#9090a8',font:{size:10},boxWidth:12}};wc.scales.y.ticks={color:'#6b6b80',font:{size:10},stepSize:1};CHARTS.win=new Chart($('winChart'),{type:'bar',data:{labels:sorted.map(p=>p.name),datasets:[{label:'Wins',data:sorted.map(p=>p.wins),backgroundColor:sorted.map(p=>p.color+'bb')},{label:'Losses',data:sorted.map(p=>p.losses),backgroundColor:'rgba(217,95,95,.4)'}]},options:wc});
+CHARTS.dough=new Chart($('doughChart'),{type:'doughnut',data:{labels:sorted.map(p=>p.name),datasets:[{data:sorted.map(p=>Math.abs(p.total)),backgroundColor:sorted.map(p=>p.color+'cc'),borderColor:'#0b0b0f',borderWidth:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'52%',plugins:{legend:{display:false}}}});
+$('s-head').innerHTML=`<tr><th>Member</th>${dates.map(d=>`<th>${d}</th>`).join('')}<th>Total</th></tr>`;let totals=dates.map((_,i)=>sorted.reduce((s,p)=>s+p.amts[i],0));$('s-body').innerHTML=sorted.map(p=>`<tr><td>${p.name}</td>${p.amts.map(v=>`<td class="${cls(v)}">${v===0?'—':fmt(v)}</td>`).join('')}<td class="${cls(p.total)}">${fmt(p.total)}</td></tr>`).join('')+`<tr class="tot-row"><td>Session total</td>${totals.map(v=>`<td class="${cls(v)}">${fmt(v)}</td>`).join('')}<td></td></tr>`;
+$('prob-grid').innerHTML=sorted.map(p=>{let pct=(p.winProb*100).toFixed(0);return`<div class="prob-card"><div class="pn">${p.name}</div><div class="prob-pct" style="color:${p.color}">${pct}%</div><div class="prob-bar"><div class="prob-fill" style="width:${pct}%;background:${p.color}"></div></div><div class="prob-desc">${p.wins}W / ${p.losses}L · Streak: ${p.streak} · Bayesian</div></div>`}).join('');
+let pots=sorted.filter(p=>p.pot>0),tp=pots.reduce((a,p)=>a+p.pot,0);CHARTS.pot=new Chart($('potChart'),{type:'pie',data:{labels:pots.map(p=>p.name),datasets:[{data:pots.map(p=>p.pot),backgroundColor:pots.map(p=>p.color+'cc'),borderColor:'#0b0b0f',borderWidth:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});$('pot-legend').innerHTML=pots.map(p=>`<div class="pot-row"><span class="pot-dot" style="background:${p.color}"></span><span class="pot-name">${p.name}</span><span class="pot-amt" style="color:${p.color}">£${p.pot.toFixed(2)}</span><span class="pot-pct">${(p.pot/tp*100).toFixed(1)}%</span></div>`).join('');
+let tx=minSettle(sorted);$('settle-grid').innerHTML=tx.length?tx.map(t=>`<div class="settle-card"><div><div><span class="payer">${t.payer}</span> → <span class="recvr">${t.recvr}</span></div><div class="ssub">cumulative settlement</div></div><div class="amt">£${t.amount.toFixed(2)}</div></div>`).join(''):'<p style="color:var(--muted)">All square across all sessions!</p>';
+let projected=sorted.map(p=>({...p,proj:p.total+p.avg})).sort((a,b)=>b.proj-a.proj),fav=[...stats].filter(p=>p.played).sort((a,b)=>b.winProb-a.winProb)[0],next=[...stats].sort((a,b)=>(b.total*.6+b.winProb*20)-(a.total*.6+a.winProb*20))[0];
+$('pred-banner').innerHTML=`<div class="icon">🃏</div><div><div class="lbl">Most likely next session winner</div><div class="pw">${next.name}</div><div class="psub">Win probability ${(next.winProb*100).toFixed(0)}% · Average £${fmt(next.avg)}/session</div></div>`;
+$('pred-cards').innerHTML=`<div class="pred-card"><div class="pt">Projected leader</div><div class="pv" style="color:${projected[0].color}">${projected[0].name}</div><div class="pd">£${fmt(projected[0].proj)}</div></div><div class="pred-card"><div class="pt">Comeback potential</div><div class="pv">${sorted.at(-1).name}</div><div class="pd">£${Math.abs(sorted.at(-1).total).toFixed(2)} deficit</div></div><div class="pred-card"><div class="pt">Projected pot</div><div class="pv" style="color:var(--green)">£${(totalPot+avgPot).toFixed(2)}</div><div class="pd">after one more session</div></div><div class="pred-card"><div class="pt">Top win probability</div><div class="pv" style="color:${fav.color}">${fav.name}</div><div class="pd">${(fav.winProb*100).toFixed(0)}% Bayesian</div></div>`;
+$('insights').innerHTML=`<div class="insight-box"><div class="il">📊 Season summary</div><p>After ${nd} sessions, <strong>${leader.name}</strong> leads with £${fmt(leader.total)}. Total positive winnings are £${totalPot.toFixed(2)} across ${stats.filter(p=>p.played).length} active members.</p></div><div class="insight-box"><div class="il">🔮 Projection</div><p>At current average results, ${projected[0].name} projects to £${fmt(projected[0].proj)} after another session. ${sorted.at(-1).name} has the largest deficit.</p></div>`;
+runMonteCarlo(sorted);
+}
+function runMonteCarlo(sorted){const N=10000,S=2,active=sorted.filter(p=>p.played);const randn=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};let results=active.map(p=>{let a=p.amts.filter(v=>v!==0),m=a.reduce((x,y)=>x+y,0)/a.length,sd=a.length>1?Math.sqrt(a.reduce((x,y)=>x+(y-m)**2,0)/a.length)||1:Math.abs(a[0]||5),f=[];for(let i=0;i<N;i++){let g=0;for(let s=0;s<S;s++)g+=m+sd*randn();f.push(p.total+g)}f.sort((a,b)=>a-b);return{...p,medianFinal:f[5000],p5:f[500],p95:f[9500],profit:f.filter(x=>x>0).length/N,sd}}).sort((a,b)=>b.medianFinal-a.medianFinal);
+CHARTS.mcBar=new Chart($('mcBarChart'),{type:'bar',data:{labels:results.map(p=>p.name),datasets:[{label:'Current',data:results.map(p=>+p.total.toFixed(2)),backgroundColor:'rgba(255,255,255,.06)'},{label:'Median final',data:results.map(p=>+p.medianFinal.toFixed(2)),backgroundColor:results.map(p=>p.color+'bb')}]},options:chartCfg()});
+CHARTS.mcWin=new Chart($('mcWinChart'),{type:'bar',data:{labels:results.map(p=>p.name),datasets:[{data:results.map(p=>+(p.profit*100).toFixed(1)),backgroundColor:results.map(p=>p.color+'bb')}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#9090a8'}},y:{min:0,max:100,ticks:{color:'#6b6b80',callback:v=>v+'%'}}}}});
+$('mc-grid').innerHTML=results.map(p=>`<div class="mc-card"><div>${p.name}</div><div class="mv" style="color:${p.color}">£${p.medianFinal.toFixed(2)}</div><div class="mr">Now £${p.total.toFixed(2)} → 90% range £${p.p5.toFixed(2)} to £${p.p95.toFixed(2)}</div><div class="mbar"><div class="mfill" style="width:${p.profit*100}%;background:${p.color}"></div></div><div class="mwin">Profit chance ${(p.profit*100).toFixed(1)}% · σ £${p.sd.toFixed(2)}</div></div>`).join('');
+$('mc-standings').innerHTML=`<div class="chart-card"><div class="il">🏆 Predicted Final Q2 Standings</div><table class="stbl"><thead><tr><th>Rank</th><th>Member</th><th>Current</th><th>Predicted</th><th>Best</th><th>Worst</th><th>Profit %</th></tr></thead><tbody>${results.map((p,i)=>`<tr><td>${i+1}</td><td>${p.name}</td><td>${fmt(p.total)}</td><td style="color:${p.color}">${fmt(p.medianFinal)}</td><td class="pos">${fmt(p.p95)}</td><td class="neg">${fmt(p.p5)}</td><td>${(p.profit*100).toFixed(0)}%</td></tr>`).join('')}</tbody></table></div>`;
+$('mc-ruin').innerHTML=`<div class="ruin-card"><div class="rl">🎲 Simulation note</div><div style="font-size:12px;color:var(--muted2)">Monte Carlo results are estimates based only on historical session outcomes; they are not guarantees or forecasts of actual play.</div></div>`;
+}
+
+const GOOGLE_SHEET_ID='1atYCWXa9Rx4fCNDe01j5a5Jg0LtugiMk';
+const GOOGLE_SHEET_CSV=`https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv`;
+async function refreshGoogleSheet(){
+  $('save-status').textContent='↻ Reading Google Sheet…';
+  try{
+    const res=await fetch(GOOGLE_SHEET_CSV,{cache:'no-store'});
+    if(!res.ok) throw new Error('Google Sheet not publicly readable');
+    const text=await res.text();
+    const rows=parseCSVText(text);
+    if(!rows) throw new Error('Could not recognise the sheet layout');
+    currentData=rows;
+    render(rows.dates,rows.players);
+    localStorage.setItem('rwmpc-q2-2026',JSON.stringify(currentData));
+    $('save-status').textContent='✓ Live Google Sheet loaded';
+    setTimeout(()=>$('save-status').textContent='',3500);
+  }catch(e){
+    $('save-status').textContent='⚠ Google Sheet could not be read';
+    alert('The Google Sheet could not be read. Check that the sheet is shared as “Anyone with the link – Viewer” and that the first tab contains the poker data.');
+  }
+}
+function parseCSVText(text){
+  const lines=[];
+  let row=[],cell='',quote=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i],nx=text[i+1];
+    if(ch==='"'){
+      if(quote&&nx==='"'){cell+='"';i++} else quote=!quote;
+    }else if(ch===','&&!quote){row.push(cell);cell=''}
+    else if((ch==='\n'||ch==='\r')&&!quote){
+      if(ch==='\r'&&nx==='\n')i++;
+      row.push(cell);cell='';if(row.some(x=>x.trim()!=='')){lines.push(row);};row=[];
+    }else cell+=ch;
+  }
+  if(cell!==''||row.length){row.push(cell);if(row.some(x=>x.trim()!==''))lines.push(row)}
+  if(lines.length<2)return null;
+  let hi=lines.findIndex(r=>r.length>=3&&String(r[2]||'').trim()!=='');
+  if(hi<0)hi=0;
+  const dates=lines[hi].slice(2).map(x=>String(x).trim()).filter(Boolean);
+  const players=lines.slice(hi+1).filter(r=>String(r[0]||'').trim()&&!String(r[0]).toLowerCase().includes('night pot'))
+    .map(r=>({name:String(r[0]).trim(),amounts:dates.map((_,i)=>parseFloat(String(r[i+2]??0).replace(/[£,]/g,''))||0)}));
+  return dates.length&&players.length?{dates,players}:null;
+}
+function save(data){localStorage.setItem('rwmpc-q2-2026',JSON.stringify(data));$('save-status').textContent='✓ Saved in this browser';setTimeout(()=>$('save-status').textContent='',2500)}
+function resetData(){localStorage.removeItem('rwmpc-q2-2026');render(DEFAULT_DATA.dates,DEFAULT_DATA.players);$('save-status').textContent='✓ Reset'}
+function downloadExcel(){let data=currentData,rows=[['Member','Total',...data.dates],...data.players.map(p=>[p.name,p.amounts.reduce((a,b)=>a+b,0),...p.amounts])];let ws=XLSX.utils.aoa_to_sheet(rows),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Poker Data');XLSX.writeFile(wb,'royal_wharf_marathi_poker_data.xlsx')}
+let currentData=DEFAULT_DATA;
+$('file-input').addEventListener('change',e=>{let file=e.target.files[0];if(!file)return;let reader=new FileReader();reader.onload=ev=>{try{let wb=XLSX.read(ev.target.result,{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]],rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});if(rows.length<2)throw Error();let hi=rows.findIndex(r=>r.length>=3&&r[2]!==''),dates=rows[hi].slice(2).map(String).filter(Boolean),players=rows.slice(hi+1).filter(r=>String(r[0]||'').trim()&&!String(r[0]).toLowerCase().includes('night pot')).map(r=>({name:String(r[0]).trim(),amounts:dates.map((_,i)=>parseFloat(String(r[i+2]??0).replace(/[£,]/g,''))||0)}));if(!dates.length||!players.length)throw Error();currentData={dates,players};render(dates,players);save(currentData)}catch(err){alert('Could not read this Excel file. Use the supplied template: Member | Total | Session dates...')}e.target.value=''};reader.readAsArrayBuffer(file)});
+(async()=>{
+  render(DEFAULT_DATA.dates,DEFAULT_DATA.players);
+  try{await refreshGoogleSheet()}
+  catch(e){try{let s=localStorage.getItem('rwmpc-q2-2026');if(s){currentData=JSON.parse(s);render(currentData.dates,currentData.players)}}catch(_){}}
+})();
+</script>
+</body></html>
